@@ -85,6 +85,7 @@ void HDetector::runnin_state_cb(std_msgs::Bool data){
 }
 
 void HDetector::image_cb(const sensor_msgs::ImageConstPtr& img){
+    cout << "entrou no image_cb";
     if(this->runnin){
         cv_bridge::CvImagePtr cv_ptr;
         try{
@@ -197,6 +198,7 @@ int HDetector::getCenter_Y(){
 
 
 bool HDetector::detect (Mat frame){
+    cout << "entrou no detect";
     Mat frame2 = frame;
     bool detected = false;
     cvtColor(frame, frame, CV_BGR2GRAY);

@@ -41,7 +41,7 @@ class VisCon():
         self.delay = 0
         self.velocity = TwistStamped()
         self.scale_factor = 1
-        self.is_losted = True
+        self.is_losted = False
         self.last_time = time.time()
         # PIDs
         self.pid_x = PID(-0.01, -0.008, -0.0001)         # size how close the drone is to the H

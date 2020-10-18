@@ -10,7 +10,7 @@ from sensor_msgs.msg import BatteryState, NavSatFix
 import math
 import time
 
-TOL = 0.5
+TOL = 0.1
 TOL_GLOBAL = 0.00001
 MAX_TIME_DISARM = 15
 ALT_TOL = 0.1
