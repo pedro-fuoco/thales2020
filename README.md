@@ -1,11 +1,11 @@
 HackSEA USP - Equipe 15
-- Gabriela Yuri Ishikawa - [gabiishikawa@usp.br](mailto:gabiishikawa@usp.br)
+- Gabriela Yuri Ishikawa - [gabiishikawa@usp.br](mailto:gabiishikawa@usp.br)   
 Engenahria Mecatrônica - Poli-USP
-- Letícia Miyuki Kimoto - [leticiakimoto@usp.br](mailto:leticiakimoto@usp.br)
+- Letícia Miyuki Kimoto - [leticiakimoto@usp.br](mailto:leticiakimoto@usp.br)   
 Engenharia Mecatrônica - Poli-USP
-- Pedro Pimentel Fuoco - [fuoco@usp.br](mailto:fuoco@usp.br)
+- Pedro Pimentel Fuoco - [fuoco@usp.br](mailto:fuoco@usp.br)   
 Engenharia Mecatrônica - Poli-USP
-- Tomaz Maia Suller - [tomaz.suller@usp.br](mailto:tomaz.suller@usp.br)
+- Tomaz Maia Suller - [tomaz.suller@usp.br](mailto:tomaz.suller@usp.br)   
 Engenharia de Computação - Poli-USP 
 
 # Projeto Allnighter
@@ -34,25 +34,25 @@ Para a operação autônoma de drones em sistemas de entrega, é essencial que o
 ## Uso
 (admitindo operação em sistemas Linux, testado no Ubuntu 16.04 LTS)
 - **Simulação**
-1. Criar um catkin workspace
-`mkdir catkin_ws`
-`cd catkin_ws && mkdir src && cd src`
+1. Criar um catkin workspace   
+`mkdir catkin_ws`   
+`cd catkin_ws && mkdir src && cd src`   
 `catkin_init_workspace`
-2. Clonar este repositório dentro da `src` do workspace
+2. Clonar este repositório dentro da `src` do workspace   
 `git clone https://github.com/pedro-fuoco/thales2020.git`
-3. Compilar o wokrspace
+3. Compilar o wokrspace   
 `cd ..`
 `catkin build thales2020`
-4. Gerar o mundo da simulaço no Gazebo
+4. Gerar o mundo da simulaço no Gazebo   
 `source scripts/simulate.sh`
-5. Executar arquivo da missão
+5. Executar arquivo da missão   
 `roslaunch thales2020 pouso.launch`
 
 - **Teste de detecção com a webcam**
-1. Clonar este repositório
+1. Clonar este repositório   
 `git clone https://github.com/pedro-fuoco/thales2020.git`
-2. Compilar o arquivo `h_sem_ros.cpp`
+2. Compilar o arquivo `h_sem_ros.cpp`   
 `cd thales2020/src`
-`g++ h_sem_ros.cpp -o webcam_h ``pkg-config --cflags --libs opencv``
+`g++ h_sem_ros.cpp -o webcam_h` ``pkg-config --cflags --libs opencv``
 3. Executar
-``
+`./webcam_h
