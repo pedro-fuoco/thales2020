@@ -52,7 +52,7 @@ Para a operação autônoma de drones em sistemas de entrega, é essencial que o
 1. Clonar este repositório   
 `git clone https://github.com/pedro-fuoco/thales2020.git`
 2. Compilar o arquivo `h_sem_ros.cpp`   
-`cd thales2020/src`
-`g++ h_sem_ros.cpp -o webcam_h` ``pkg-config --cflags --libs opencv``
+`cd thales2020/src`   
+<p>g++ h_sem_ros.cpp -o webcam_h `pkg-config --cflags --libs opencv`</p>
 3. Executar
 `./webcam_h
