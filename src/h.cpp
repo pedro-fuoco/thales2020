@@ -57,7 +57,7 @@ HDetector::HDetector(){
     //Here, the ros topics are matched with their subscribers and publishers, respectively
     this->h_pub = this->n.advertise<thales2020::H_info>("/cv_detection/detection", 0);
     this->img_debug_pub = this->n.advertise<sensor_msgs::Image>("/cv_detection/debug/image_raw", 0);
-    this->h_sub_image = this->n.subscribe("/iris_fpv_cam/usb_cam/image_raw", 5, &HDetector::image_cb, this);
+    this->h_sub_image = this->n.subscribe("/iris/usb_cam/image_raw", 5, &HDetector::image_cb, this);
     this->h_sub_runner = this->n.subscribe("/cv_detection/set_running_state",10, &HDetector::runnin_state_cb, this);
 }
 
@@ -85,7 +85,6 @@ void HDetector::runnin_state_cb(std_msgs::Bool data){
 }
 
 void HDetector::image_cb(const sensor_msgs::ImageConstPtr& img){
-    cout << "entrou no image_cb";
     if(this->runnin){
         cv_bridge::CvImagePtr cv_ptr;
         try{
@@ -198,7 +197,6 @@ int HDetector::getCenter_Y(){
 
 
 bool HDetector::detect (Mat frame){
-    cout << "entrou no detect";
     Mat frame2 = frame;
     bool detected = false;
     cvtColor(frame, frame, CV_BGR2GRAY);
@@ -253,8 +251,8 @@ bool HDetector::detect (Mat frame){
                     circle(frame2, this->edge_pts[3], 3, (255,0,0), 3 );
                     rectangle(frame2, bounds, (0,255,0));
                     imshow("Lines", frame2);
-                    cout << "H detectado!" << endl;
                 }
+                cout << "H detectado!" << endl;
                 detected = true;
             }
         }

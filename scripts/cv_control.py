@@ -17,17 +17,8 @@ class VisCon():
         rospy.init_node('control')
         self.rate = rospy.Rate(60)
 
-        # State updater
-        self.running_state = False
-        self.running_sub = rospy.Subscriber("/cv_detection/set_running_state", Bool, self.running_callback)
         # ROS Parameters
-        #self.vel_topic = "/mavros/cmd_vel" # Tello
-        # self.vel_topic = "/mavros/setpoint_velocity/cmd_vel"
         self.vel_topic = rospy.get_param("/mavros_velocity_pub")
-        #self.pose_topic = rospy.get_param("/pose_topic")
-
-        # self.pid_config_file = rospy.get_param("~pid_config_file")
-        # self.calibrate_pid = rospy.get_param('~calibrate_pid',False)
 
         # Publishers
         self.vel_pub = rospy.Publisher(self.vel_topic, TwistStamped, queue_size=1)
@@ -35,14 +26,9 @@ class VisCon():
         # Subscribers
         self.detection_sub = rospy.Subscriber('/cv_detection/detection', H_info, self.detection_callback)
         
-        self.last_time = time.time()
-
         # Attributes
-        self.delay = 0
         self.velocity = TwistStamped()
-        self.scale_factor = 1
-        self.is_losted = False
-        self.last_time = time.time()
+        
         # PIDs
         self.pid_x = PID(-0.01, -0.008, -0.0001)         # size how close the drone is to the H
         self.pid_y = PID(0.01, 0.008, 0.0001)
@@ -53,13 +39,7 @@ class VisCon():
        
         self.pid_z.output_limits = (-0.5, 0.5)  # output value will be between -0.8 and 0.8
     
-    def running_callback(self, bool):
-        rospy.logwarn("CV Control activated")
-        self.running_state = bool.data
-
-
-    
-    def set_goal_pose(self, x, y, z, w):
+    def set_goal_pose(self):
         self.pid_x.setpoint = -240.0/2 # y size
         self.pid_y.setpoint = 320.0/2 # x
         self.pid_z.setpoint = 0.01 # 1% of the image area
@@ -74,55 +54,32 @@ class VisCon():
     def detection_callback(self, vector_data):
         self.detection = vector_data
         self.last_time = time.time()
-        rospy.loginfo(self.velocity) # debug
-
-    def cfg_callback(self, config, level):
-        
-        if hasattr(self, 'pid_x'):
-            self.pid_x.tunings = (config.p_x, config.i_x, config.d_x)
-            self.pid_y.tunings = (config.p_y, config.i_y, config.d_y)
-            self.pid_z.tunings = (config.p_z, config.i_z, config.d_z)
-            self.pid_w.tunings = (config.p_w, config.i_w, config.d_w)
-        else:
-            self.pid_x = PID(config.p_x, config.i_x, config.d_x)
-            self.pid_y = PID(config.p_y, config.i_y, config.d_y)
-            self.pid_z = PID(config.p_z, config.i_z, config.d_z)
-            self.pid_w = PID(config.p_w, config.i_w, config.d_w)
-        #print(config)
-        self.scale_factor = config.scale_factor
-
-        self.set_goal_pose(config.position_x,
-                            config.position_y,
-                            config.position_z,
-                            config.position_w)
-
-        return config
 
     def run(self):
-        self.set_goal_pose(0, 0, 0, 0)
-        while not rospy.is_shutdown():
-            self.delay = time.time() - self.last_time
-            if self.running_state:
-                self.delay = time.time() - self.last_time
-                self.is_losted = self.delay > 5
-                if not self.is_losted:
-                    self.velocity.twist.linear.x = self.pid_x(-self.detection.center_y)
-                    self.velocity.twist.linear.y = self.pid_y(self.detection.center_x)
-                    self.velocity.twist.linear.z = self.pid_z(-self.detection.area_ratio) # PID z must have negative parameters
-                    self.velocity.twist.angular.z = 0       # TODO implement self.pid_w(orientation)
-            
-                else:                                       # Assume velocity message will be treated
+        self.set_goal_pose()
+        start_time = rospy.get_rostime().secs
 
-                    rospy.loginfo("Timeout: {}".format(str(self.delay)))
-                    self.velocity.twist.linear.x = 0
-                    self.velocity.twist.linear.y = 0
-                    self.velocity.twist.linear.z = 0
-                    self.velocity.twist.angular.z = 0 # TODO implement self.pid_w(orientation)
-                
+        while not rospy.is_shutdown() or rospy.get_rostime().secs - start_time <= 100:
+            
+            try:
+
+                self.velocity.twist.linear.x = self.pid_x(-self.detection.center_y)
+                self.velocity.twist.linear.y = self.pid_y(self.detection.center_x)
+                self.velocity.twist.linear.z = self.pid_z(-self.detection.area_ratio) # PID z must have negative parameters
+                self.velocity.twist.angular.z = 0
+            
                 self.vel_pub.publish(self.velocity)
-                    # Assume velocity message will be treated
-                
+                # Assume velocity message will be treated
+                    
+                rospy.spin()
+            
+            except:
+                rospy.logwarn("ERROR")
+                continue
+
             self.rate.sleep()
+
+        rospy.loginfo("DONE")
 
 if __name__ == "__main__":
     c = VisCon()
