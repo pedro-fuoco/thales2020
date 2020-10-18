@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 import rospy
-from cv_detection.msg import H_info
+from thales2020.msg import H_info
 from geometry_msgs.msg import TwistStamped
 from std_msgs.msg import Bool
 
 from dynamic_reconfigure.server import Server
-from viscon.cfg import ControllerConfig
 
 from simple_pid import PID
 
@@ -37,8 +36,6 @@ class VisCon():
         self.detection_sub = rospy.Subscriber('/cv_detection/detection', H_info, self.detection_callback)
         
         self.last_time = time.time()
-        # Servers
-        self.cfg_srv = Server(ControllerConfig, self.cfg_callback)
 
         # Attributes
         self.delay = 0
